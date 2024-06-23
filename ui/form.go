@@ -3,49 +3,52 @@ package ui
 import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/stopwatch"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	// "github.com/ethangrant/timekeeper/stopwatch"
+	"github.com/ethangrant/timekeeper/tasks"
 )
 
 type form struct {
-	help  help.Model
-	title textinput.Model
-	desc  textarea.Model
-	timer stopwatch.Model
+	heading string
+	help    help.Model
+	title   textinput.Model
+	desc    textarea.Model
+	// timer   stopwatch.Model
 }
 
-func NewForm() form {
+func NewForm() *form {
 	form := form{
-		help:  help.New(),
-		title: textinput.New(),
-		desc:  textarea.New(),
-		timer: stopwatch.New(),
+		heading: "Create a new task",
+		help:    help.New(),
+		title:   textinput.New(),
+		desc:    textarea.New(),
+		// timer:   stopwatch.New(0),
 	}
 
-	form.title.Placeholder = "Task title"
+	form.title.Placeholder = "Ticket"
 	form.desc.Placeholder = "What have you been working on?"
 	form.title.Focus()
 
-	return form
+	return &form
 }
 
-func (f form) Init() tea.Cmd {
+func (f *form) Init() tea.Cmd {
 	return nil
 }
 
-func (f form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (f *form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, keys.StartTimer, keys.StopTimer):
-			keys.StartTimer.SetEnabled(!f.timer.Running())
-			keys.StopTimer.SetEnabled(f.timer.Running())
-			return f, f.timer.Toggle()
-		case key.Matches(msg, keys.ResetTimer):
-			f.timer.Reset()
+		// case key.Matches(msg, keys.StartTimer, keys.StopTimer):
+		// 	keys.StartTimer.SetEnabled(!f.timer.Running())
+		// 	keys.StopTimer.SetEnabled(f.timer.Running())
+		// 	return f, f.timer.Toggle()
+		// case key.Matches(msg, keys.ResetTimer):
+		// 	f.timer.Reset()
 		case key.Matches(msg, keys.Quit):
 			return f, tea.Quit
 
@@ -57,7 +60,9 @@ func (f form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				f.desc.Focus()
 				return f, textarea.Blink
 			}
-			// Return the completed form as a message.
+
+			timeKeeperModel.list.InsertItem(0, tasks.New("CUT-101", "Performance improvements"))
+
 			return timeKeeperModel.Update(f)
 		}
 	}
@@ -69,18 +74,18 @@ func (f form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	// Update the stopwatch
-	var swCmd tea.Cmd
-	f.timer, swCmd = f.timer.Update(msg)
+	// var swCmd tea.Cmd
+	// f.timer, swCmd = f.timer.Update(msg)
 
-	return f, tea.Batch(cmd, swCmd)
+	return f, tea.Batch(cmd)
 }
 
-func (f form) View() string {
+func (f *form) View() string {
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
-		"Create a new task",
+		f.heading,
 		f.title.View(),
 		f.desc.View(),
-		f.timer.View(),
+		// f.timer.View(),
 		f.help.View(keys))
 }

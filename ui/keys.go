@@ -84,9 +84,11 @@ var keys = keyMap{
 		key.WithHelp("q/ctrl+s", "toggle timer"),
 	),
 	StopTimer: key.NewBinding(
-		key.WithKeys("ctrl+d"),
+		key.WithKeys("ctrl+s"),
+		key.WithHelp("q/ctrl+s", "toggle timer"),
 	),
 	ResetTimer: key.NewBinding(
 		key.WithKeys("ctrl+r"),
+		key.WithHelp("ctrl+r", "reset timer"),
 	),
 }
