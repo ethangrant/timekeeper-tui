@@ -86,13 +86,13 @@ func (f *form) View() string {
 
 // cmd to insert new task
 func taskFormSubmitted(title string, desc string) tea.Cmd {
-	return func () tea.Msg {
+	return func() tea.Msg {
 		ctx := context.Background()
 		queries := taskdb.New(DbConn)
 
 		insertedTask, err := queries.CreateTask(ctx, taskdb.CreateTaskParams{
-			Title: title,
-			Desc: desc,
+			Title:    title,
+			Desc:     desc,
 			Duration: 0,
 		})
 

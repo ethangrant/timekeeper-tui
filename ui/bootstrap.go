@@ -9,13 +9,14 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 
-	_ "github.com/golang-migrate/migrate/v4/source/github"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 // setup a global db instance
 var DbConn *sql.DB
+
 func dbInit() *sql.DB {
 	filename := "/tmp/timekeeper.db"
 	_, err := os.Stat(filename)
