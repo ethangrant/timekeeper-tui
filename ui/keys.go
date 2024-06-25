@@ -36,8 +36,8 @@ type keyMap struct {
 
 var keys = keyMap{
 	New: key.NewBinding(
-		key.WithKeys("n"),
-		key.WithHelp("n", "new"),
+		key.WithKeys("ctrl+n"),
+		key.WithHelp("ctrl+n", "new"),
 	),
 	Edit: key.NewBinding(
 		key.WithKeys("e"),

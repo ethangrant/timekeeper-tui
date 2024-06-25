@@ -1,13 +1,16 @@
 package ui
 
 import (
+	"context"
+	"time"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	// "github.com/ethangrant/timekeeper/stopwatch"
+	"github.com/ethangrant/timekeeper/taskdb"
 	"github.com/ethangrant/timekeeper/tasks"
 )
 
@@ -16,7 +19,14 @@ type form struct {
 	help    help.Model
 	title   textinput.Model
 	desc    textarea.Model
-	// timer   stopwatch.Model
+}
+
+type TaskFormSubmittedMsg struct {
+	task tasks.Task
+}
+
+type TaskFormSubmittedErrorMsg struct {
+	err error
 }
 
 func NewForm() *form {
@@ -25,7 +35,6 @@ func NewForm() *form {
 		help:    help.New(),
 		title:   textinput.New(),
 		desc:    textarea.New(),
-		// timer:   stopwatch.New(0),
 	}
 
 	form.title.Placeholder = "Ticket"
@@ -43,15 +52,6 @@ func (f *form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		// case key.Matches(msg, keys.StartTimer, keys.StopTimer):
-		// 	keys.StartTimer.SetEnabled(!f.timer.Running())
-		// 	keys.StopTimer.SetEnabled(f.timer.Running())
-		// 	return f, f.timer.Toggle()
-		// case key.Matches(msg, keys.ResetTimer):
-		// 	f.timer.Reset()
-		case key.Matches(msg, keys.Quit):
-			return f, tea.Quit
-
 		case key.Matches(msg, keys.Back):
 			return timeKeeperModel.Update(nil)
 		case key.Matches(msg, keys.Enter):
@@ -61,9 +61,8 @@ func (f *form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return f, textarea.Blink
 			}
 
-			timeKeeperModel.list.InsertItem(0, tasks.New("CUT-101", "Performance improvements"))
-
-			return timeKeeperModel.Update(f)
+			t, cmd := timeKeeperModel.Update(f)
+			return t, tea.Batch(cmd, taskFormSubmitted(f.title.Value(), f.desc.Value()))
 		}
 	}
 	var cmd tea.Cmd
@@ -72,10 +71,6 @@ func (f *form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	} else {
 		f.desc, cmd = f.desc.Update(msg)
 	}
-
-	// Update the stopwatch
-	// var swCmd tea.Cmd
-	// f.timer, swCmd = f.timer.Update(msg)
 
 	return f, tea.Batch(cmd)
 }
@@ -86,6 +81,27 @@ func (f *form) View() string {
 		f.heading,
 		f.title.View(),
 		f.desc.View(),
-		// f.timer.View(),
 		f.help.View(keys))
+}
+
+// cmd to insert new task
+func taskFormSubmitted(title string, desc string) tea.Cmd {
+	return func () tea.Msg {
+		ctx := context.Background()
+		queries := taskdb.New(DbConn)
+
+		insertedTask, err := queries.CreateTask(ctx, taskdb.CreateTaskParams{
+			Title: title,
+			Desc: desc,
+			Duration: 0,
+		})
+
+		if err != nil {
+			return TaskFormSubmittedErrorMsg{err: err}
+		}
+
+		tsk := tasks.New(insertedTask.Title, insertedTask.Desc, time.Duration(insertedTask.Duration))
+
+		return TaskFormSubmittedMsg{task: tsk}
+	}
 }

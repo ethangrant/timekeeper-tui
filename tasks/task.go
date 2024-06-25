@@ -1,23 +1,23 @@
 package tasks
 
-import "github.com/ethangrant/timekeeper/stopwatch"
+import (
+	"time"
 
-// import "time"
+	"github.com/ethangrant/timekeeper/stopwatch"
+)
 
 type Task struct {
 	title string
 	desc  string
 	Timer *stopwatch.Model
-	// totalTime string
 	// created time.Time
 }
 
-func New(title string, desc string) Task {
+func New(title string, desc string, duration time.Duration) Task {
 	return Task{
 		title: title,
 		desc:  desc,
 		Timer: stopwatch.New(0),
-		// created: created,
 	}
 }
 

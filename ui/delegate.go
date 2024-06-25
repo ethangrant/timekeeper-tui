@@ -8,7 +8,6 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/ethangrant/timekeeper/stopwatch"
 	"github.com/ethangrant/timekeeper/tasks"
 )
 
@@ -20,8 +19,6 @@ func (d itemDelegate) Spacing() int { return list.NewDefaultDelegate().Spacing()
 func (d itemDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
 	task, _ := m.SelectedItem().(tasks.Task)
 	switch msg := msg.(type) {
-	case stopwatch.TickMsg:
-		log.Default().Print("Tick message recieved")
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.StartTimer, keys.StopTimer):
@@ -40,11 +37,11 @@ func (d itemDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
 
 	return swCmd
 }
+
 func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
 	list.NewDefaultDelegate().Render(w, m, index, listItem)
 	if task, ok := listItem.(tasks.Task); ok {
-		// Now you can access the Timer field
-		fmt.Fprintf(w, task.Timer.View())
+		fmt.Fprintf(w, "%s%s", "\n", task.Timer.View())
 	}
 }
 

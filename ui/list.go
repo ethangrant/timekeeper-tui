@@ -1,10 +1,35 @@
 package ui
 
-import "github.com/charmbracelet/bubbles/list"
+import (
+	"context"
+	"fmt"
+	"time"
 
-func NewList(title string) list.Model {
-	l := list.New([]list.Item{}, NewItemDelegate(), 0, 0)
-	l.Title = title
+	"github.com/charmbracelet/bubbles/list"
+	"github.com/ethangrant/timekeeper/taskdb"
+	"github.com/ethangrant/timekeeper/tasks"
+)
 
-	return l
+// return a new bubble list using tasks in the database
+func NewList(title string, date time.Time) list.Model {
+	bubbleList := []list.Item{}
+	ctx := context.Background()
+    queries := taskdb.New(DbConn)
+    tsks, err := queries.GetAllTasksByDate(ctx, date.Format("2006-01-02"))
+	if err != nil {
+		fmt.Println("failed to load tasks")
+	}
+
+    for _, tsk := range tsks {
+       bubbleList = append(bubbleList, tasks.New(tsk.Title, tsk.Desc, time.Duration(tsk.Duration))) 
+    }
+
+	lst := list.New(bubbleList, NewItemDelegate(), 0, 0)
+	lst.Title = title
+
+	return lst
 }
+
+// func parseDateString(date string) {
+
+// }
