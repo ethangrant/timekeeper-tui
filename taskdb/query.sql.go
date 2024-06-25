@@ -97,3 +97,25 @@ func (q *Queries) GetAllTasksByDate(ctx context.Context, date interface{}) ([]Ta
 	}
 	return items, nil
 }
+
+const updateTaskDuration = `-- name: UpdateTaskDuration :one
+UPDATE tasks SET duration = ? where id = ? RETURNING id, title, "desc", duration, created_at
+`
+
+type UpdateTaskDurationParams struct {
+	Duration int64
+	ID       int64
+}
+
+func (q *Queries) UpdateTaskDuration(ctx context.Context, arg UpdateTaskDurationParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, updateTaskDuration, arg.Duration, arg.ID)
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Desc,
+		&i.Duration,
+		&i.CreatedAt,
+	)
+	return i, err
+}

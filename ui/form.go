@@ -100,7 +100,7 @@ func taskFormSubmitted(title string, desc string) tea.Cmd {
 			return TaskFormSubmittedErrorMsg{err: err}
 		}
 
-		tsk := tasks.New(insertedTask.Title, insertedTask.Desc, time.Duration(insertedTask.Duration))
+		tsk := tasks.New(insertedTask.ID, insertedTask.Title, insertedTask.Desc, time.Duration(insertedTask.Duration))
 
 		return TaskFormSubmittedMsg{task: tsk}
 	}

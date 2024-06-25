@@ -92,7 +92,6 @@ func (m *Model) Start() tea.Cmd {
 // Stop stops the stopwatch.
 func (m *Model) Stop() tea.Cmd {
 	return func() tea.Msg {
-		log.Default().Print("Send stop message")
 		return StartStopMsg{ID: m.id, running: false}
 	}
 }
@@ -100,7 +99,6 @@ func (m *Model) Stop() tea.Cmd {
 // Toggle stops the stopwatch if it is running and starts it if it is stopped.
 func (m *Model) Toggle() tea.Cmd {
 	if m.Running() {
-		log.Default().Print("Stop the TIMER!")
 		return m.Stop()
 	}
 	return m.Start()

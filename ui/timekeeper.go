@@ -71,6 +71,7 @@ func (t *timeKeeper) View() string {
 
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
+        // TODO: Style the error message
 		errorMsg,
 		DocStyle.Render(t.list.View()),
 		t.help.View(keys),

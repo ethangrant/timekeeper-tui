@@ -21,7 +21,7 @@ func NewList(title string, date time.Time) list.Model {
 	}
 
 	for _, tsk := range tsks {
-		bubbleList = append(bubbleList, tasks.New(tsk.Title, tsk.Desc, time.Duration(tsk.Duration)))
+		bubbleList = append(bubbleList, tasks.New(tsk.ID, tsk.Title, tsk.Desc, time.Duration(tsk.Duration)))
 	}
 
 	lst := list.New(bubbleList, NewItemDelegate(), 0, 0)
@@ -29,7 +29,3 @@ func NewList(title string, date time.Time) list.Model {
 
 	return lst
 }
-
-// func parseDateString(date string) {
-
-// }
