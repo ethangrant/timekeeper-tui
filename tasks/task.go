@@ -19,7 +19,7 @@ func New(id int64, title string, desc string, duration time.Duration) Task {
 		id:    id,
 		title: title,
 		desc:  desc,
-		Timer: stopwatch.New(0),
+		Timer: stopwatch.New(duration),
 	}
 }
 

@@ -132,7 +132,9 @@ func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
 		}
 		m.d = 0
 	case TickMsg:
+		log.Default().Println("tick msg running: ", m.running)
 		if !m.running || msg.ID != m.id {
+			log.Default().Println("BREAK timer")
 			break
 		}
 		m.d += m.Interval

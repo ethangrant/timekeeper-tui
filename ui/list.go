@@ -3,6 +3,7 @@ package ui
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -21,11 +22,14 @@ func NewList(title string, date time.Time) list.Model {
 	}
 
 	for _, tsk := range tsks {
-		bubbleList = append(bubbleList, tasks.New(tsk.ID, tsk.Title, tsk.Desc, time.Duration(tsk.Duration)))
+		log.Default().Println(tsk.Duration)
+		bubbleList = append(bubbleList, tasks.New(tsk.ID, tsk.Title, tsk.Desc, time.Duration(tsk.Duration) * time.Second))
 	}
 
 	lst := list.New(bubbleList, NewItemDelegate(), 0, 0)
 	lst.Title = title + date.Format("02/01/2006")
+
+	log.Default().Println("LIST TITLE: ", lst.Title)
 
 	return lst
 }

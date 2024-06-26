@@ -52,9 +52,10 @@ func (t *timeKeeper) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case TaskFormSubmittedErrorMsg:
 		t.err = msg.err
 		return t, nil
-	// case UpdateTaskDurationMsg:
-	// 	log.Default().Println("update task msg recieved")
-	// 	return msg.task.Timer.Update(msg)
+	case UpdateTaskDurationMsg:
+		log.Default().Println("update task msg recieved")
+		_, swCmd := msg.task.Timer.Update(msg)
+		return t, swCmd
 	case UpdateTaskDurationErrMsg:
 		log.Default().Println("update task error msg recieved")
 		t.err = msg.err
