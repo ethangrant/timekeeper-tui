@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"log"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -51,6 +52,13 @@ func (t *timeKeeper) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case TaskFormSubmittedErrorMsg:
 		t.err = msg.err
 		return t, nil
+	// case UpdateTaskDurationMsg:
+	// 	log.Default().Println("update task msg recieved")
+	// 	return msg.task.Timer.Update(msg)
+	case UpdateTaskDurationErrMsg:
+		log.Default().Println("update task error msg recieved")
+		t.err = msg.err
+		return t, nil
 	}
 
 	var cmd tea.Cmd
@@ -63,7 +71,7 @@ func (t *timeKeeper) View() string {
 	var errorMsg string
 
 	if t.err != nil {
-		errorMsg = t.err.Error()
+		errorMsg = ErrorMessageStyle.Render(t.err.Error())
 	}
 
 	// reset the err
@@ -71,9 +79,8 @@ func (t *timeKeeper) View() string {
 
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
-        // TODO: Style the error message
-		errorMsg,
 		DocStyle.Render(t.list.View()),
+		errorMsg,
 		t.help.View(keys),
 	)
 }

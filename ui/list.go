@@ -25,7 +25,7 @@ func NewList(title string, date time.Time) list.Model {
 	}
 
 	lst := list.New(bubbleList, NewItemDelegate(), 0, 0)
-	lst.Title = title
+	lst.Title = title + date.Format("02/01/2006")
 
 	return lst
 }

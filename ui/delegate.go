@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/ethangrant/timekeeper/stopwatch"
+	// "github.com/ethangrant/timekeeper/stopwatch"
 	"github.com/ethangrant/timekeeper/taskdb"
 	"github.com/ethangrant/timekeeper/tasks"
 )
@@ -30,13 +30,17 @@ func (d itemDelegate) Spacing() int { return list.NewDefaultDelegate().Spacing()
 func (d itemDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
 	task, _ := m.SelectedItem().(tasks.Task)
 	switch msg := msg.(type) {
-	case stopwatch.StartStopMsg:
-		return updateTaskDuration(task)
+	case UpdateTaskDurationMsg:
+		log.Default().Println("delegate captures update task msg")
+	// case stopwatch.StartStopMsg:
+		// log.Default().Println("update task")
+		// return updateTaskDuration(task)
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.StartTimer, keys.StopTimer):
 			keys.StartTimer.SetEnabled(!task.Timer.Running())
 			keys.StopTimer.SetEnabled(task.Timer.Running())
+			log.Default().Println("Timer toggled")
 			return task.Timer.Toggle()
 		case key.Matches(msg, keys.ResetTimer):
 			return task.Timer.Reset()
@@ -63,13 +67,13 @@ func NewItemDelegate() *itemDelegate {
 
 // TODO: Handle this message somewhere probably timekeeper
 func updateTaskDuration(task tasks.Task) tea.Cmd {
-	return func () tea.Msg {
+	return func() tea.Msg {
 		ctx := context.Background()
 		queries := taskdb.New(DbConn)
 		_, err := queries.UpdateTaskDuration(
 			ctx, taskdb.UpdateTaskDurationParams{
 				Duration: int64(task.Timer.Elapsed()),
-				ID: task.Id(),
+				ID:       task.Id(),
 			},
 		)
 
